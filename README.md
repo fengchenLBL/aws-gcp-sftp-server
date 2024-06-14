@@ -1,22 +1,37 @@
-Setting up an FTP server on a GCP VM using Docker involves several steps. Below is a detailed tutorial on how to achieve this.
+## Step 1: Create an AWS EC2 Instance
 
-### Step 1: Create a GCP VM Instance
+1. **Go to AWS Management Console**: [AWS Management Console](https://aws.amazon.com/).
+2. **Launch a New EC2 Instance**:
+   - Navigate to `EC2` > `Instances`.
+   - Click `Launch Instances`.
+   - Choose an appropriate Amazon Machine Image (AMI) (e.g., `Ubuntu Server 20.04 LTS`).
+   - Select an instance type (e.g., `t2.micro` for free tier or `t3.medium` for better performance).
+   - Configure instance details as needed.
+   - Add storage (increase the default storage size if necessary).
+   - Add tags (optional).
+   - Configure security group:
+     - Allow `SSH` (port 22) from your IP.
+     - Allow `FTP` (port 21) from any IP.
+     - Allow custom TCP rule (ports 30000-30009) from any IP.
+   - Review and launch the instance.
 
-1. **Go to Google Cloud Console**: [Google Cloud Console](https://console.cloud.google.com/).
-2. **Create a New VM Instance**:
-   - Navigate to `Compute Engine` > `VM instances`.
-   - Click `Create Instance`.
-   - Choose an appropriate name for your instance.
-   - Select the `Region` and `Zone`.
-   - Choose the `Machine type` (e.g., `n1-standard-1`).
-   - Under `Boot disk`, click `Change` to select `Ubuntu` and choose an appropriate version (e.g., `Ubuntu 20.04 LTS`).
-   - Click `Select` and then `Create`.
+3. **Download the Key Pair**:
+   - Create a new key pair or use an existing one.
+   - Download the key pair (`.pem` file).
 
-### Step 2: Connect to Your VM Instance
+## Step 2: Connect to Your EC2 Instance
 
-1. Once the instance is created, click on the `SSH` button next to your instance to open an SSH terminal.
+1. **Open a terminal** (or use PuTTY on Windows).
+2. **Set the permissions for the key pair file**:
+   ```bash
+   chmod 400 /path/to/your-key-pair.pem
 
-### Step 3: Install Docker on Your VM
+3. **Connect to the instance**:
+   ```bash
+   ssh -i /path/to/your-key-pair.pem ubuntu@your-ec2-public-dns
+   ```
+
+## Step 3: Install Docker on Your EC2 Instance
 
 1. **Update the package list**:
    ```bash
@@ -58,7 +73,7 @@ Setting up an FTP server on a GCP VM using Docker involves several steps. Below 
    sudo systemctl enable docker
    ```
 
-### Step 4: Run an FTP Server in a Docker Container
+## Step 4: Run an FTP Server in a Docker Container
 
 1. **Pull an FTP server Docker image** (for this example, we will use `fauria/vsftpd`):
    ```bash
@@ -67,33 +82,30 @@ Setting up an FTP server on a GCP VM using Docker involves several steps. Below 
 
 2. **Run the Docker container**:
    ```bash
-   sudo docker run -d -p 21:21 -p 30000-30009:30000-30009 -e FTP_USER=user -e FTP_PASS=pass -e PASV_ADDRESS=YOUR_VM_EXTERNAL_IP -v /path/to/ftpdata:/home/vsftpd fauria/vsftpd
+   sudo docker run -d -p 21:21 -p 30000-30009:30000-30009 -e FTP_USER=user -e FTP_PASS=pass -e PASV_ADDRESS=YOUR_EC2_PUBLIC_IP -v /path/to/ftpdata:/home/vsftpd fauria/vsftpd
    ```
 
    - Replace `user` and `pass` with your desired FTP username and password.
-   - Replace `YOUR_VM_EXTERNAL_IP` with the external IP address of your GCP VM.
+   - Replace `YOUR_EC2_PUBLIC_IP` with the public IP address of your EC2 instance.
    - Replace `/path/to/ftpdata` with the path where you want to store the FTP data.
 
-### Step 5: Open Firewall Ports on GCP
+## Step 5: Open Firewall Ports on AWS
 
-1. **Open ports 21 and 30000-30009**:
-   - Go to `VPC network` > `Firewall rules`.
-   - Click `Create firewall rule`.
-   - Set the `Name`, e.g., `ftp-ports`.
-   - Set `Targets` to `All instances in the network`.
-   - Set `Source IP ranges` to `0.0.0.0/0`.
-   - Set `Allowed protocols and ports` to `tcp:21,tcp:30000-30009`.
-   - Click `Create`.
+1. **Ensure ports 21 and 30000-30009 are open** in the security group associated with your EC2 instance:
+   - Navigate to `EC2` > `Security Groups`.
+   - Select the security group associated with your instance.
+   - Edit the inbound rules to ensure ports 21 and 30000-30009 are open for TCP traffic from any IP.
 
-### Step 6: Connect to the FTP Server
+## Step 6: Connect to the FTP Server
 
 1. Use an FTP client (e.g., FileZilla) to connect to your FTP server.
-   - Host: `YOUR_VM_EXTERNAL_IP`
-   - Port: `21`
-   - Protocol: `FTP`
-   - Encryption: `Use explicit FTP over TLS if available`
-   - Logon Type: `Normal`
-   - User: `user`
-   - Password: `pass`
+   - **Host**: `YOUR_EC2_PUBLIC_IP`
+   - **Port**: `21`
+   - **Protocol**: `FTP`
+   - **Encryption**: `Use explicit FTP over TLS if available`
+   - **Logon Type**: `Normal`
+   - **User**: `user`
+   - **Password**: `pass`
 
-Now you should have a functional FTP server running on a GCP VM using Docker, ready to receive large files.
+Now you should have a functional FTP server running on an AWS EC2 instance using Docker, ready to receive large files.
+```
