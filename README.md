@@ -108,4 +108,3 @@
    - **Password**: `pass`
 
 Now you should have a functional FTP server running on an AWS EC2 instance using Docker, ready to receive large files.
-```
