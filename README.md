@@ -1,5 +1,3 @@
-Setting up an FTP server on a GCP VM using Docker involves several steps. Below is a detailed tutorial on how to achieve this.
-
 ### Step 1: Create a GCP VM Instance
 
 1. **Go to Google Cloud Console**: [Google Cloud Console](https://console.cloud.google.com/).
