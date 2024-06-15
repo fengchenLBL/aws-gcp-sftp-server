@@ -68,6 +68,16 @@
    ```
 
 ## Step 4: Run an SFTP Server using Docker Compose
+The `atmoz/sftp` Docker image is a popular, easy-to-use image for setting up an SFTP server. It allows you to quickly create an SFTP server by providing user credentials and other configurations through environment variables.
+
+- **Multi-user support**: Easily add multiple users.
+- **Chroot environment**: Users are isolated in their home directories.
+- **SSH key authentication**: Set up SSH key authentication for users.
+- **UID and GID support**: Specify user and group IDs to match the host system.
+- **Customizable**: Mount volumes to the user directories and configure permissions as needed.
+
+For more information, visit the [atmoz/sftp Docker Hub page](https://hub.docker.com/r/atmoz/sftp).
+
 
 1. **Create a directory for your Docker Compose configuration**:
    ```bash
