@@ -95,7 +95,7 @@
 
 3. **Set permissions for the SFTP data directory:**:
    ```bash
-   sudo chown 1001:1001 /path/to/sftpdata
+   sudo chown -R 1001:1001 /path/to/sftpdata
    ```
    - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
