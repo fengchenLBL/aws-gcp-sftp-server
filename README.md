@@ -93,7 +93,12 @@
    - Replace `user` and `pass` with your desired SFTP username and password.
    - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
-3. **Start the Docker Compose application**:
+3. **Set permissions for the SFTP data directory:**:
+   ```bash
+   sudo chown 1001:1001 /path/to/sftpdata
+   ```
+
+4. **Start the Docker Compose application**:
    ```bash
    sudo docker-compose up -d
    ```
