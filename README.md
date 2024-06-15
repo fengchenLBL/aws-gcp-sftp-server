@@ -93,13 +93,14 @@
    - Replace `user` and `pass` with your desired SFTP username and password.
    - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
-3. **Set permissions for the SFTP data directory:**:
+3. **Set permissions for the SFTP data directory**:
+   The default UID & GID on GCP are `1001`
    ```bash
    sudo chown -R 1001:1001 /path/to/sftpdata
    ```
    - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
-4. **Start the Docker Compose application**:
+5. **Start the Docker Compose application**:
    ```bash
    sudo docker-compose up -d
    ```
