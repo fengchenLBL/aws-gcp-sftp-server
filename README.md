@@ -1,6 +1,5 @@
 
-# Setup an FTP Server on GCP VM using Docker
-
+# Setup an SFTP Server on GCP VM using Docker
 
 ## Step 1: Create a GCP VM Instance
 
@@ -11,7 +10,9 @@
    - Choose an appropriate name for your instance.
    - Select the `Region` and `Zone`.
    - Choose the `Machine type` (e.g., `n1-standard-1`).
-   - Under `Boot disk`, click `Change` to select `Ubuntu` and choose an appropriate version (e.g., `Ubuntu 20.04 LTS`).
+   - Under `Boot disk`:
+     - Click `Change` to select `Ubuntu` and choose an appropriate version (e.g., `Ubuntu 20.04 LTS`).
+     - Adjust disk size as needed.
    - Click `Select` and then `Create`.
 
 ## Step 2: Connect to Your VM Instance
@@ -66,12 +67,12 @@
    sudo chmod +x /usr/local/bin/docker-compose
    ```
 
-## Step 4: Run an FTP Server using Docker Compose
+## Step 4: Run an SFTP Server using Docker Compose
 
 1. **Create a directory for your Docker Compose configuration**:
    ```bash
-   mkdir ftp-server
-   cd ftp-server
+   mkdir sftp-server
+   cd sftp-server
    ```
 
 2. **Create a `docker-compose.yml` file**:
@@ -79,23 +80,18 @@
    version: '3.1'
 
    services:
-     ftp:
-       image: fauria/vsftpd
-       container_name: ftp_server
+     sftp:
+       image: atmoz/sftp
+       container_name: sftp_server
        ports:
-         - "21:21"
-         - "30000-30009:30000-30009"
-       environment:
-         FTP_USER: "user"
-         FTP_PASS: "pass"
-         PASV_ADDRESS: "YOUR_VM_EXTERNAL_IP"
+         - "2222:22"
        volumes:
-         - /path/to/ftpdata:/home/vsftpd
+         - /path/to/sftpdata:/home/user/upload
+       command: user:pass:1001
    ```
 
-   - Replace `user` and `pass` with your desired FTP username and password.
-   - Replace `YOUR_VM_EXTERNAL_IP` with the external IP address of your GCP VM.
-   - Replace `/path/to/ftpdata` with the path where you want to store the FTP data.
+   - Replace `user` and `pass` with your desired SFTP username and password.
+   - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
 3. **Start the Docker Compose application**:
    ```bash
@@ -104,24 +100,40 @@
 
 ## Step 5: Open Firewall Ports on GCP
 
-1. **Open ports 21 and 30000-30009**:
+1. **Open port 2222**:
    - Go to `VPC network` > `Firewall rules`.
    - Click `Create firewall rule`.
-   - Set the `Name`, e.g., `ftp-ports`.
+   - Set the `Name`, e.g., `sftp-port-2222`.
    - Set `Targets` to `All instances in the network`.
    - Set `Source IP ranges` to `0.0.0.0/0`.
-   - Set `Allowed protocols and ports` to `tcp:21,tcp:30000-30009`.
+   - Set `Allowed protocols and ports` to `tcp:2222`.
    - Click `Create`.
 
-## Step 6: Connect to the FTP Server
+## Step 6: Connect to the SFTP Server
 
-1. Use an FTP client (e.g., FileZilla) to connect to your FTP server.
+1. Use an SFTP client (e.g., FileZilla) to connect to your SFTP server.
    - **Host**: `YOUR_VM_EXTERNAL_IP`
-   - **Port**: `21`
-   - **Protocol**: `FTP`
-   - **Encryption**: `Use explicit FTP over TLS if available`
+   - **Port**: `2222`
+   - **Protocol**: `SFTP`
    - **Logon Type**: `Normal`
    - **User**: `user`
    - **Password**: `pass`
 
-Now you should have a functional FTP server running on a GCP VM using Docker Compose, ready to receive large files.
+## Step 7: SSH into the SFTP Server Container
+
+1. **Navigate to your Docker Compose directory**:
+   ```bash
+   cd /path/to/sftp-server
+   ```
+
+2. **SSH into the `sftp` service container**:
+   ```bash
+   sudo docker-compose exec sftp bash
+   ```
+3. **Check logs from the `sftp` service container**:
+   ```bash
+   sudo docker-compose logs sftp
+   ```
+
+
+Now you should have a functional SFTP server running on a GCP VM using Docker Compose, ready to receive files. You can also SSH into the container if needed.
