@@ -9,7 +9,7 @@
    - Choose an appropriate Amazon Machine Image (AMI) (e.g., `Ubuntu Server 20.04 LTS`).
    - Select an instance type (e.g., `t2.micro` for free tier or `t3.medium` for better performance).
    - Configure instance details as needed.
-   - Add storage (increase the default storage size if necessary).
+   - Add storage (increase the default storage size if necessary, e.g. 200GB).
    - Add tags (optional).
    - Configure security group:
      - Allow `SSH` (port 22) from your IP.
