@@ -97,6 +97,7 @@
    ```bash
    sudo chown 1001:1001 /path/to/sftpdata
    ```
+   - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
 4. **Start the Docker Compose application**:
    ```bash
