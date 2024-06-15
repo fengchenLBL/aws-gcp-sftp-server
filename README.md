@@ -101,15 +101,15 @@
          - "2222:22"
        volumes:
          - /path/to/sftpdata:/home/user/upload
-       command: user:pass:1001
+       command: user:pass:1000
    ```
 
    - Replace `user` and `pass` with your desired SFTP username and password.
    - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
-3. **Set permissions for the SFTP data directory**:
+3. **Set permissions for the SFTP data directory**: The default UID & GID on AWS are `1000`
    ```bash
-   sudo chown -R 1001:1001 /path/to/sftpdata
+   sudo chown -R 1000:1000 /path/to/sftpdata
    ```
 
 4. **Start the Docker Compose application**:
