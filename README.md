@@ -1,5 +1,4 @@
-
-# Setup an FTP Server on AWS EC2 using Docker
+# Setup an SFTP Server on AWS EC2 using Docker
 
 ## Step 1: Create an AWS EC2 Instance
 
@@ -14,8 +13,7 @@
    - Add tags (optional).
    - Configure security group:
      - Allow `SSH` (port 22) from your IP.
-     - Allow `FTP` (port 21) from any IP.
-     - Allow custom TCP rule (ports 30000-30009) from any IP.
+     - Allow custom TCP rule (port 2222) from any IP.
    - Review and launch the instance.
 
 3. **Download the Key Pair**:
@@ -83,12 +81,12 @@
    sudo chmod +x /usr/local/bin/docker-compose
    ```
 
-## Step 4: Run an FTP Server using Docker Compose
+## Step 4: Run an SFTP Server using Docker Compose
 
 1. **Create a directory for your Docker Compose configuration**:
    ```bash
-   mkdir ftp-server
-   cd ftp-server
+   mkdir sftp-server
+   cd sftp-server
    ```
 
 2. **Create a `docker-compose.yml` file**:
@@ -96,47 +94,61 @@
    version: '3.1'
 
    services:
-     ftp:
-       image: fauria/vsftpd
-       container_name: ftp_server
+     sftp:
+       image: atmoz/sftp
+       container_name: sftp_server
        ports:
-         - "21:21"
-         - "30000-30009:30000-30009"
-       environment:
-         FTP_USER: "user"
-         FTP_PASS: "pass"
-         PASV_ADDRESS: "YOUR_EC2_PUBLIC_IP"
+         - "2222:22"
        volumes:
-         - /path/to/ftpdata:/home/vsftpd
+         - /path/to/sftpdata:/home/user/upload
+       command: user:pass:1001
    ```
 
-   - Replace `user` and `pass` with your desired FTP username and password.
-   - Replace `YOUR_EC2_PUBLIC_IP` with the public IP address of your EC2 instance.
-   - Replace `/path/to/ftpdata` with the path where you want to store the FTP data.
+   - Replace `user` and `pass` with your desired SFTP username and password.
+   - Replace `/path/to/sftpdata` with the path where you want to store the SFTP data.
 
-3. **Start the Docker Compose application**:
+3. **Set permissions for the SFTP data directory**:
+   ```bash
+   sudo chown -R 1001:1001 /path/to/sftpdata
+   ```
+
+4. **Start the Docker Compose application**:
    ```bash
    sudo docker-compose up -d
    ```
 
 ## Step 5: Open Firewall Ports on AWS
 
-1. **Ensure ports 21 and 30000-30009 are open** in the security group associated with your EC2 instance:
+1. **Ensure port 2222 is open** in the security group associated with your EC2 instance:
    - Navigate to `EC2` > `Security Groups`.
    - Select the security group associated with your instance.
-   - Edit the inbound rules to ensure ports 21 and 30000-30009 are open for TCP traffic from any IP.
+   - Edit the inbound rules to ensure port 2222 is open for TCP traffic from any IP.
 
-## Step 6: Connect to the FTP Server
+## Step 6: Connect to the SFTP Server
 
-1. Use an FTP client (e.g., FileZilla) to connect to your FTP server.
+1. Use an SFTP client (e.g., FileZilla) to connect to your SFTP server.
    - **Host**: `YOUR_EC2_PUBLIC_IP`
-   - **Port**: `21`
-   - **Protocol**: `FTP`
-   - **Encryption**: `Use explicit FTP over TLS if available`
+   - **Port**: `2222`
+   - **Protocol**: `SFTP`
    - **Logon Type**: `Normal`
    - **User**: `user`
    - **Password**: `pass`
 
-Now you should have a functional FTP server running on an AWS EC2 instance using Docker Compose, ready to receive files.
+## Step 7: SSH into the SFTP Server Container
 
-You can copy and paste the above content into a `README.md` file.
+1. **Navigate to your Docker Compose directory**:
+   ```bash
+   cd /path/to/sftp-server
+   ```
+
+2. **SSH into the `sftp` service container**:
+   ```bash
+   sudo docker-compose exec sftp bash
+   ```
+
+3. **Check logs from the `sftp` service container**:
+   ```bash
+   sudo docker-compose logs sftp
+   ```
+
+Now you should have a functional SFTP server running on an AWS EC2 instance using Docker Compose, ready to receive large files. You can also SSH into the container if needed.
