@@ -12,7 +12,7 @@
    - Choose the `Machine type` (e.g., `n1-standard-1`).
    - Under `Boot disk`:
      - Click `Change` to select `Ubuntu` and choose an appropriate version (e.g., `Ubuntu 20.04 LTS`).
-     - Adjust disk size as needed.
+     - Adjust disk size if necessary, e.g. 200GiB.
    - Click `Select` and then `Create`.
 
 ## Step 2: Connect to Your VM Instance
